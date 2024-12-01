@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import styles from "./Search.module.css";
 
 interface User {
   login: string;
@@ -52,7 +53,7 @@ function Search() {
 
   return (
     <div>
-      <div className="search-bar">
+      <div className={styles.searchBar}>
         <input
           type="text"
           value={query}
@@ -61,17 +62,17 @@ function Search() {
         />
         <button onClick={handleSearch}>Search</button>
       </div>
-      <button onClick={handleSort} className="sort-button">
+      <button onClick={handleSort} className={styles.sortButton}>
         Sort by ID ({sortOrder === "asc" ? "Ascending" : "Descending"})
       </button>
 
       {isLoading ? (
         <p>Loading...</p>
       ) : (
-        <ul className="user-list">
+        <ul className={styles.userList}>
           {users.map((user) => (
-            <li key={user.id} className="user-item">
-              <img src={user.avatar_url} alt={user.login} className="avatar" />
+            <li key={user.id} className={styles.userItem}>
+              <img src={user.avatar_url} alt={user.login} className={styles.avatar} />
               <div>
                 <Link to={`/user/${user.login}`}>{user.login}</Link>
               </div>
@@ -80,7 +81,7 @@ function Search() {
         </ul>
       )}
 
-      <div className="pagination">
+      <div className={styles.pagination}>
         {Array.from({ length: Math.ceil(totalCount / 10) }, (_, i) => (
           <button
             key={i}
