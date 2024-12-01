@@ -1,18 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "./Search.module.css";
-
-interface User {
-  login: string;
-  avatar_url: string;
-  html_url: string;
-  id: number;
-}
-
-interface ApiResponse {
-  items: User[];
-  total_count: number;
-}
+import { User } from "../../interfaces/User";
+import { ApiResponse } from "../../interfaces/ApiResponse";
 
 function Search() {
   const [query, setQuery] = useState("");
