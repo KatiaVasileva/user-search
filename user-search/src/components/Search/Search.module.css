@@ -25,6 +25,12 @@
 .userList {
   list-style: none;
   padding: 0;
+  height: 600px;
+  
+}
+
+.loading {
+  height: 600px;
 }
 
 .userItem {
@@ -45,7 +51,7 @@
 }
 
 .pagination button {
-  margin: 0 5px;
+  margin: 5px 5px;
   padding: 5px 10px;
   cursor: pointer;
 }

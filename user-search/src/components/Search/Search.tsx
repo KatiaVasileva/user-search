@@ -31,8 +31,11 @@ function Search() {
     const data: ApiResponse = await response.json();
     setUsers(data.items);
     saveUsersToLocalStorage(data.items);
-    console.log(data.items);
-    setTotalCount(data.total_count);
+    if (data.total_count < 1001) {
+      setTotalCount(data.total_count);
+    } else {
+      setTotalCount(1000);
+    }
     saveTotalCountToLocalStorage(data.total_count);
     setIsLoading(false);
   };
@@ -88,7 +91,7 @@ function Search() {
       </button>
 
       {isLoading ? (
-        <p>Loading...</p>
+        <p className={styles.loading}>Loading...</p>
       ) : (
         <ul className={styles.userList}>
           {users.map((user) => (
