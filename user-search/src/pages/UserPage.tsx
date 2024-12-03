@@ -6,11 +6,7 @@ export default function UserPage() {
 
   return (
     <UserDetails
-      match={{
-        params: {
-          username: username,
-        },
-      }}
+      username={username}
     />
   );
 }

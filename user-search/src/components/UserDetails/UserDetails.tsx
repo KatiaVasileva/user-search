@@ -3,9 +3,7 @@ import { User } from "../../interfaces/User";
 import styles from "./UserDetails.module.css";
 import { useNavigate } from "react-router-dom";
 
-const UserDetails: React.FC<{
-  match: { params: { username: string | undefined } };
-}> = ({ match }) => {
+const UserDetails = ({ username } : {username: string | undefined}) => {
   const [userDetails, setUserDetails] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -14,7 +12,7 @@ const UserDetails: React.FC<{
     const fetchUserDetails = async () => {
       setIsLoading(true);
       const response = await fetch(
-        `https://api.github.com/users/${match.params.username}`
+        `https://api.github.com/users/${username}`
       );
       const data = await response.json();
       setUserDetails(data);
@@ -22,7 +20,7 @@ const UserDetails: React.FC<{
     };
 
     fetchUserDetails();
-  }, [match.params.username]);
+  }, [username]);
 
   if (isLoading) {
     return <p>Loading...</p>;

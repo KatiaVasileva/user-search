@@ -1,16 +1,28 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./Search.module.css";
 import { User } from "../../interfaces/User";
 import { ApiResponse } from "../../interfaces/ApiResponse";
+import {
+  getQueryFromLocalStorage,
+  getTotalCountFromLocalStorage,
+  getUsersFromLocalStorage,
+  removeQueryFromLocalStorage,
+  removeTotalCountFromLocalStorage,
+  removeUsersFromLocalStorage,
+  saveQueryToLocalStorage,
+  saveTotalCountToLocalStorage,
+  saveUsersToLocalStorage,
+} from "../../utils/usersLocalStorage";
 
 function Search() {
-  const [query, setQuery] = useState("");
-  const [users, setUsers] = useState<User[]>([]);
+  const [query, setQuery] = useState(getQueryFromLocalStorage);
+  const [users, setUsers] = useState<User[]>(getUsersFromLocalStorage);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(getTotalCountFromLocalStorage);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const fetchUsers = async (page: number) => {
     setIsLoading(true);
@@ -18,7 +30,10 @@ function Search() {
     const response = await fetch(url);
     const data: ApiResponse = await response.json();
     setUsers(data.items);
+    saveUsersToLocalStorage(data.items);
+    console.log(data.items);
     setTotalCount(data.total_count);
+    saveTotalCountToLocalStorage(data.total_count);
     setIsLoading(false);
   };
 
@@ -41,19 +56,35 @@ function Search() {
     fetchUsers(page);
   };
 
+  const handleNewSearch = () => {
+    removeUsersFromLocalStorage();
+    removeTotalCountFromLocalStorage();
+    removeQueryFromLocalStorage();
+    setQuery("");
+    setUsers([]);
+    setTotalCount(0);
+    navigate("/");
+  };
+
   return (
     <div>
       <div className={styles.searchBar}>
         <input
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            saveQueryToLocalStorage(e.target.value);
+          }}
           placeholder="Search for GitHub users"
         />
         <button onClick={handleSearch}>Search</button>
       </div>
       <button onClick={handleSort} className={styles.sortButton}>
         Sort by ID ({sortOrder === "asc" ? "Ascending" : "Descending"})
+      </button>
+      <button onClick={handleNewSearch} className={styles.sortButton}>
+        New Search
       </button>
 
       {isLoading ? (
@@ -62,7 +93,11 @@ function Search() {
         <ul className={styles.userList}>
           {users.map((user) => (
             <li key={user.id} className={styles.userItem}>
-              <img src={user.avatar_url} alt={user.login} className={styles.avatar} />
+              <img
+                src={user.avatar_url}
+                alt={user.login}
+                className={styles.avatar}
+              />
               <div>
                 <Link to={`/user/${user.login}`}>{user.login}</Link>
               </div>
@@ -71,17 +106,19 @@ function Search() {
         </ul>
       )}
 
-      <div className={styles.pagination}>
-        {Array.from({ length: Math.ceil(totalCount / 10) }, (_, i) => (
-          <button
-            key={i}
-            onClick={() => handlePageChange(i + 1)}
-            className={currentPage === i + 1 ? "active" : ""}
-          >
-            {i + 1}
-          </button>
-        ))}
-      </div>
+      {users.length > 0 && (
+        <div className={styles.pagination}>
+          {Array.from({ length: Math.ceil(totalCount / 10) }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => handlePageChange(i + 1)}
+              className={currentPage === i + 1 ? "active" : ""}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
